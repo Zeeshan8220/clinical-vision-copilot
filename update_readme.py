@@ -1,4 +1,4 @@
-# Clinical Vision Copilot
+files = {'README.md': '''# Clinical Vision Copilot
 
 Multi-agent AI decision-support system for medical case analysis. Built solo,
 zero-budget, using free tools (Google Colab, Kaggle datasets, Hugging Face)
@@ -102,7 +102,7 @@ this repo's code, which is safely on GitHub). If you reconnect and get
 
 ```bash
 python -m venv venv
-source venv/bin/activate      # Windows: venv\Scriptsctivate
+source venv/bin/activate      # Windows: venv\Scripts\activate
 pip install -r requirements.txt
 ```
 
@@ -123,3 +123,22 @@ pip install -r requirements.txt
 See `Clinical_Vision_Copilot_Unified_Roadmap.docx` for the full 14-week plan
 and `Phase1_Radiology_Agent_Learning_Notes.docx` for detailed Phase 1
 concepts, debugging log, and lessons learned.
+'''}
+
+
+for path, content in files.items():
+    with open(path, "w") as fh:
+        fh.write(content)
+    print(f"Written: {path}")
+
+import subprocess
+from google.colab import userdata
+
+subprocess.run(["git", "add", "."])
+commit = subprocess.run(["git", "commit", "-m", "Update README with Phase 1 results, reproduction steps, and file guide"], capture_output=True, text=True)
+print(commit.stdout, commit.stderr)
+
+token = userdata.get('GITHUB_TOKEN')
+remote_url = f"https://{token}@github.com/Zeeshan8220/clinical-vision-copilot.git"
+push = subprocess.run(["git", "push", remote_url, "main"], capture_output=True, text=True)
+print(push.stdout, push.stderr)
