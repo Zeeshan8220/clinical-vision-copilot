@@ -1,10 +1,8 @@
 """
-Run Grad-CAM on multiple images at once (mix of NORMAL and PNEUMONIA)
-to sanity-check that the model is looking at plausible, consistent
-regions rather than random/spurious patterns.
+Grad-CAM batch test -- XRV Experiment version.
 
 Run:
-  python src/radiology_agent/gradcam_batch.py --checkpoint checkpoints/radiology_epoch5.pt
+  python src/radiology_agent/gradcam_batch_xrv.py --checkpoint checkpoints_xrv/radiology_xrv_epoch5.pt
 """
 
 import argparse
@@ -19,26 +17,27 @@ from pytorch_grad_cam import GradCAM
 from pytorch_grad_cam.utils.model_targets import ClassifierOutputTarget
 from pytorch_grad_cam.utils.image import show_cam_on_image
 
-from dataset import EVAL_TRANSFORM, CLASS_NAMES
-from model import RadiologyClassifier
+from dataset import CropTop, CropCenter, XRVPreprocess, CLASS_NAMES
+import torchvision.transforms as T
+from model_xrv import RadiologyClassifierXRV
 
 
 def main(args):
     device = "cuda" if torch.cuda.is_available() else "cpu"
 
-    model = RadiologyClassifier(num_classes=len(CLASS_NAMES))
+    model = RadiologyClassifierXRV(num_classes=len(CLASS_NAMES))
     state = torch.load(args.checkpoint, map_location=device)
     model.load_state_dict(state)
     model.to(device)
     model.eval()
-    # Try an earlier block for potentially sharper localization
-    # (features[-1] is the final 1x1 projection -- very coarse 7x7 grid;
-    # features[-3] is an earlier MBConv block with more spatial detail)
-    target_layer = model.backbone.features[-1]
+
+    # Last dense block before the final batch-norm -- a reasonable
+    # Grad-CAM target for DenseNet architectures
+    target_layer = model.features.denseblock4
     cam = GradCAM(model=model, target_layers=[target_layer])
 
-    # Pick a random sample of images from each class
-    # No fixed seed -- different random images picked each run
+    preprocess = T.Compose([CropTop(0.18), CropCenter(0.15), XRVPreprocess()])
+
     samples = []
     for cls in CLASS_NAMES:
         cls_dir = os.path.join(args.root_dir, "test", cls)
@@ -51,8 +50,10 @@ def main(args):
 
     for i, (path, true_label) in enumerate(samples):
         original = Image.open(path).convert("L")
-        input_tensor = EVAL_TRANSFORM(original).unsqueeze(0).to(device)
-        rgb_img = np.array(original.convert("RGB").resize((224, 224))).astype(np.float32) / 255.0
+        cropped = CropCenter(0.15)(CropTop(0.18)(original))  # for display
+        input_tensor = preprocess(original).unsqueeze(0).to(device)
+
+        display_img = np.array(cropped.resize((224, 224)).convert("RGB")).astype(np.float32) / 255.0
 
         with torch.no_grad():
             probs = torch.softmax(model(input_tensor), dim=1)[0]
@@ -61,11 +62,11 @@ def main(args):
             confidence = pneumonia_prob if pred_class == 1 else (1 - pneumonia_prob)
 
         grayscale_cam = cam(input_tensor=input_tensor, targets=[ClassifierOutputTarget(pred_class)])[0]
-        visualization = show_cam_on_image(rgb_img, grayscale_cam, use_rgb=True)
+        visualization = show_cam_on_image(display_img, grayscale_cam, use_rgb=True)
 
         correct = "CORRECT" if CLASS_NAMES[pred_class] == true_label else "WRONG"
 
-        axes[0, i].imshow(rgb_img)
+        axes[0, i].imshow(display_img)
         axes[0, i].set_title(f"True: {true_label}", fontsize=10)
         axes[0, i].axis("off")
 
@@ -83,7 +84,7 @@ if __name__ == "__main__":
     parser.add_argument("--root-dir", default="data/pneumonia/chest_xray")
     parser.add_argument("--checkpoint", required=True)
     parser.add_argument("--per-class", type=int, default=4)
-    parser.add_argument("--threshold", type=float, default=0.8)
-    parser.add_argument("--output", default="gradcam_grid.png")
+    parser.add_argument("--threshold", type=float, default=0.5)
+    parser.add_argument("--output", default="gradcam_grid_xrv.png")
     args = parser.parse_args()
     main(args)
