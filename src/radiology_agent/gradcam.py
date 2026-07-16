@@ -1,5 +1,14 @@
 """
 Grad-CAM explainability for the Radiology Agent.
+
+Given a chest X-ray and a trained model, this produces a heatmap showing
+which regions of the image most influenced the model's prediction.
+
+Uses the `grad-cam` package's target layer convention: for EfficientNet,
+we hook the last convolutional block (backbone.features[-1]).
+
+Run:
+  python src/radiology_agent/gradcam.py       --checkpoint checkpoints/radiology_epoch5.pt       --image path/to/some_xray.jpeg       --output gradcam_result.png
 """
 
 import argparse
@@ -23,11 +32,14 @@ def generate_gradcam(checkpoint_path, image_path, output_path, device="cpu"):
     model.to(device)
     model.eval()
 
+    # Last conv block of EfficientNet-B0's feature extractor -- this is
+    # where Grad-CAM looks to see "what spatial regions mattered".
     target_layer = model.backbone.features[-1]
 
     original = Image.open(image_path).convert("L")
-    input_tensor = EVAL_TRANSFORM(original).unsqueeze(0).to(device)
+    input_tensor = EVAL_TRANSFORM(original).unsqueeze(0).to(device)  # add batch dim
 
+    # For visualization we need the image as a normalized RGB numpy array (0-1 range)
     rgb_img = original.convert("RGB").resize((224, 224))
     rgb_img = np.array(rgb_img).astype(np.float32) / 255.0
 
@@ -39,7 +51,7 @@ def generate_gradcam(checkpoint_path, image_path, output_path, device="cpu"):
 
     cam = GradCAM(model=model, target_layers=[target_layer])
     targets = [ClassifierOutputTarget(pred_class)]
-    grayscale_cam = cam(input_tensor=input_tensor, targets=targets)[0]
+    grayscale_cam = cam(input_tensor=input_tensor, targets=targets)[0]  # HxW heatmap
 
     visualization = show_cam_on_image(rgb_img, grayscale_cam, use_rgb=True)
 

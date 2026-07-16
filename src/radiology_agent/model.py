@@ -20,7 +20,7 @@ class RadiologyClassifier(nn.Module):
         self.backbone = backbone
 
     def forward(self, x):
-        return self.backbone(x)
+        return self.backbone(x)  # raw logits — use with CrossEntropyLoss
 
 
 def load_model(checkpoint_path=None, num_classes=2, device="cpu"):
@@ -37,4 +37,4 @@ if __name__ == "__main__":
     model = RadiologyClassifier()
     dummy = torch.randn(2, 3, 224, 224)
     out = model(dummy)
-    print(f"Output shape: {out.shape}")
+    print(f"Output shape: {out.shape}")  # expect [2, 2]

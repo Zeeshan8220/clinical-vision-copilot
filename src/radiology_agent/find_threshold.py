@@ -1,14 +1,18 @@
 """
-Evaluate a saved checkpoint on the (larger, more meaningful) test set.
+Instead of retraining, find a better decision threshold on the existing
+model. Default classification uses threshold=0.5 (if P(PNEUMONIA) > 50%,
+predict PNEUMONIA). Raising the threshold makes the model more
+"reluctant" to say PNEUMONIA, which should reduce false alarms on NORMAL
+patients -- at some cost to catching every PNEUMONIA case.
 
 Run:
-  python src/radiology_agent/evaluate_test.py       --root-dir data/pneumonia/chest_xray       --checkpoint src/radiology_agent/checkpoints/radiology_epoch3.pt
+  python src/radiology_agent/find_threshold.py --checkpoint checkpoints/radiology_epoch3.pt
 """
 
 import argparse
 import torch
 from torch.utils.data import DataLoader
-from sklearn.metrics import roc_auc_score, classification_report
+from sklearn.metrics import classification_report
 import numpy as np
 
 from dataset import get_datasets, CLASS_NAMES
@@ -26,25 +30,23 @@ def main(args):
     model.to(device)
     model.eval()
 
-    all_probs, all_preds, all_labels = [], [], []
+    all_probs, all_labels = [], []
     with torch.no_grad():
         for images, labels in test_loader:
             images = images.to(device)
             logits = model(images)
             probs = torch.softmax(logits, dim=1)[:, 1].cpu().numpy()
-            preds = torch.argmax(logits, dim=1).cpu().numpy()
             all_probs.append(probs)
-            all_preds.append(preds)
             all_labels.append(labels.numpy())
 
     all_probs = np.concatenate(all_probs)
-    all_preds = np.concatenate(all_preds)
     all_labels = np.concatenate(all_labels)
 
-    print(f"Test AUC: {roc_auc_score(all_labels, all_probs):.4f}")
-    print(f"Test Accuracy: {(all_preds == all_labels).mean():.4f}")
-    print()
-    print(classification_report(all_labels, all_preds, target_names=CLASS_NAMES))
+    for threshold in [0.9, 0.93, 0.95, 0.97, 0.98, 0.99]:
+        preds = (all_probs >= threshold).astype(int)
+        print(f"
+=== Threshold = {threshold} ===")
+        print(classification_report(all_labels, preds, target_names=CLASS_NAMES, zero_division=0))
 
 
 if __name__ == "__main__":
