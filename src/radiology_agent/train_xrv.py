@@ -17,7 +17,24 @@ import numpy as np
 
 from dataset import get_datasets_xrv, CLASS_NAMES
 from model_xrv import RadiologyClassifierXRV
-from train import FocalLoss  # reuse the same FocalLoss we already built
+
+
+class FocalLoss(nn.Module):
+    """
+    Focal Loss -- defined locally here (not imported from train.py) to
+    avoid a module-name collision with torchxrayvision's internal
+    'model' package.
+    """
+    def __init__(self, weight=None, gamma=2.0):
+        super().__init__()
+        self.weight = weight
+        self.gamma = gamma
+
+    def forward(self, logits, targets):
+        ce_loss = nn.functional.cross_entropy(logits, targets, weight=self.weight, reduction="none")
+        pt = torch.exp(-ce_loss)
+        focal_loss = ((1 - pt) ** self.gamma) * ce_loss
+        return focal_loss.mean()
 
 
 def train(args):

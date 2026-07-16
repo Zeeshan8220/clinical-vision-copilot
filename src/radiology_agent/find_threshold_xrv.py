@@ -1,0 +1,49 @@
+"""
+Threshold sweep for the XRV experiment model.
+"""
+
+import argparse
+import torch
+from torch.utils.data import DataLoader
+from sklearn.metrics import classification_report
+import numpy as np
+
+from dataset import get_datasets_xrv, CLASS_NAMES
+from model_xrv import RadiologyClassifierXRV
+
+
+def main(args):
+    device = "cuda" if torch.cuda.is_available() else "cpu"
+    _, _, test_ds = get_datasets_xrv(args.root_dir)
+    test_loader = DataLoader(test_ds, batch_size=32, shuffle=False, num_workers=2)
+
+    model = RadiologyClassifierXRV(num_classes=len(CLASS_NAMES))
+    state = torch.load(args.checkpoint, map_location=device)
+    model.load_state_dict(state)
+    model.to(device)
+    model.eval()
+
+    all_probs, all_labels = [], []
+    with torch.no_grad():
+        for images, labels in test_loader:
+            images = images.to(device)
+            logits = model(images)
+            probs = torch.softmax(logits, dim=1)[:, 1].cpu().numpy()
+            all_probs.append(probs)
+            all_labels.append(labels.numpy())
+
+    all_probs = np.concatenate(all_probs)
+    all_labels = np.concatenate(all_labels)
+
+    for threshold in [0.3, 0.4, 0.5, 0.6, 0.7, 0.8]:
+        preds = (all_probs >= threshold).astype(int)
+        print(f"\\n=== Threshold = {threshold} ===")
+        print(classification_report(all_labels, preds, target_names=CLASS_NAMES, zero_division=0))
+
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--root-dir", default="data/pneumonia/chest_xray")
+    parser.add_argument("--checkpoint", required=True)
+    args = parser.parse_args()
+    main(args)

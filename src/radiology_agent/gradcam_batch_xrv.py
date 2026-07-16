@@ -52,6 +52,7 @@ def main(args):
         original = Image.open(path).convert("L")
         cropped = CropCenter(0.15)(CropTop(0.18)(original))  # for display
         input_tensor = preprocess(original).unsqueeze(0).to(device)
+        input_tensor.requires_grad_(True)
 
         display_img = np.array(cropped.resize((224, 224)).convert("RGB")).astype(np.float32) / 255.0
 
