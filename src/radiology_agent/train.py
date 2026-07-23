@@ -17,7 +17,7 @@ from sklearn.metrics import roc_auc_score
 import numpy as np
 
 from dataset import get_datasets, CLASS_NAMES
-from model import RadiologyClassifier
+from radiology_model import RadiologyClassifier
 
 
 class FocalLoss(nn.Module):

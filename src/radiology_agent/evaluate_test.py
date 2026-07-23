@@ -12,7 +12,7 @@ from sklearn.metrics import roc_auc_score, classification_report
 import numpy as np
 
 from dataset import get_datasets, CLASS_NAMES
-from model import RadiologyClassifier
+from radiology_model import RadiologyClassifier
 
 
 def main(args):

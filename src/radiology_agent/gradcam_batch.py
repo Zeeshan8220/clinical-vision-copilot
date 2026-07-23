@@ -20,7 +20,7 @@ from pytorch_grad_cam.utils.model_targets import ClassifierOutputTarget
 from pytorch_grad_cam.utils.image import show_cam_on_image
 
 from dataset import EVAL_TRANSFORM, CLASS_NAMES
-from model import RadiologyClassifier
+from radiology_model import RadiologyClassifier
 
 
 def main(args):

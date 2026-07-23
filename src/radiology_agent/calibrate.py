@@ -25,7 +25,7 @@ from torch.utils.data import DataLoader, Subset
 import torch.nn.functional as F
 
 from dataset import get_datasets, CLASS_NAMES
-from model import RadiologyClassifier
+from radiology_model import RadiologyClassifier
 
 
 def get_logits_and_labels(model, loader, device):
