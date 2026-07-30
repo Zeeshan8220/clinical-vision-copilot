@@ -13,7 +13,7 @@ Six agents, orchestrated with LangGraph:
 
 | # | Agent | Status | Folder |
 |---|-------|--------|--------|
-| 1 | Radiology Agent | ✅ Model trained & evaluated (Phase 1) | `src/radiology_agent/` |
+| 1 | Radiology Agent | ✅ Complete — model, Grad-CAM, FastAPI endpoint (Phase 1) | `src/radiology_agent/` |
 | 2 | Risk Score Agent | ⏳ Not started (Phase 2) | `src/risk_agent/` |
 | 3 | Drug Interaction Agent | ⏳ Port from MedGenius (Phase 3) | `src/drug_interaction_agent/` |
 | 4 | Differential Diagnosis Agent | ⏳ Port from MedGenius (Phase 4) | `src/differential_dx_agent/` |
@@ -90,13 +90,15 @@ this repo's code, which is safely on GitHub). If you reconnect and get
 | File | Purpose |
 |---|---|
 | `dataset.py` | Data loading, preprocessing, and augmentation (both model variants) |
-| `model.py` / `model_xrv.py` | Model architectures |
+| `radiology_model.py` / `model_xrv.py` | Model architectures (renamed from `model.py` to avoid a naming collision with TorchXRayVision) |
 | `train.py` / `train_xrv.py` | Training loops (class-weighted Focal Loss) |
 | `evaluate_test.py` / `evaluate_test_xrv.py` | Test-set evaluation (AUC, precision, recall) |
 | `find_threshold.py` / `find_threshold_xrv.py` | Decision-threshold tuning |
 | `gradcam.py` | Single-image Grad-CAM visualization |
 | `gradcam_batch.py` / `gradcam_batch_xrv.py` | Multi-image Grad-CAM sanity-check grid |
 | `calibrate.py` | Temperature scaling for confidence calibration |
+| `api/main.py` | FastAPI endpoint (`/health`, `/predict`) |
+| `api/test_api.py` | In-process API test (no live server needed) |
 
 ## Setup (local)
 
