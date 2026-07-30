@@ -99,6 +99,8 @@ this repo's code, which is safely on GitHub). If you reconnect and get
 | `calibrate.py` | Temperature scaling for confidence calibration |
 | `api/main.py` | FastAPI endpoint (`/health`, `/predict`) |
 | `api/test_api.py` | In-process API test (no live server needed) |
+| `api/main.py` | FastAPI endpoint (`/health`, `/predict`) |
+| `api/test_api.py` | In-process API test (no live server needed) |
 
 ## Setup (local)
 
