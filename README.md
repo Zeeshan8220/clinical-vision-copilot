@@ -14,9 +14,9 @@ Six agents, orchestrated with LangGraph:
 | # | Agent | Status | Folder |
 |---|-------|--------|--------|
 | 1 | Radiology Agent | ✅ Complete — model, Grad-CAM, FastAPI endpoint (Phase 1) | `src/radiology_agent/` |
-| 2 | Risk Score Agent | ⏳ Not started (Phase 2) | `src/risk_agent/` |
-| 3 | Drug Interaction Agent | ⏳ Port from MedGenius (Phase 3) | `src/drug_interaction_agent/` |
-| 4 | Differential Diagnosis Agent | ⏳ Port from MedGenius (Phase 4) | `src/differential_dx_agent/` |
+| 2 | Risk Score Agent | ✅ Complete — XGBoost model, SHAP, FastAPI (Phase 2) | `src/risk_agent/` |
+| 3 | Drug Interaction Agent | ✅ Complete — hybrid verified DB + LLM, FastAPI (Phase 3) | `src/drug_interaction_agent/` |
+| 4 | Differential Diagnosis Agent | ✅ Complete — LLM reasoning (Groq), FastAPI (Phase 4) | `src/differential_dx_agent/` |
 | 5 | Prescription Writer Agent | ⏳ Port from MedGenius (Phase 5) | `src/prescription_agent/` |
 | 6 | Knowledge/RAG Agent | ⏳ Not started (Phase 6) | `src/knowledge_agent/` |
 | — | Orchestrator | ⏳ Not started (Phase 7) | `src/orchestrator/` |
@@ -114,9 +114,9 @@ pip install -r requirements.txt
 
 - [x] Repo skeleton
 - [x] Phase 1 — Radiology Agent (model trained, evaluated, explainability added)
-- [ ] Phase 2 — Risk Score Agent
-- [ ] Phase 3 — Drug Interaction Agent (port)
-- [ ] Phase 4 — Differential Diagnosis Agent (port)
+- [x] Phase 2 — Risk Score Agent (XGBoost + SHAP + FastAPI)
+- [x] Phase 3 — Drug Interaction Agent (hybrid verified DB + LLM + FastAPI)
+- [x] Phase 4 — Differential Diagnosis Agent (LLM reasoning + FastAPI)
 - [ ] Phase 5 — Prescription Writer Agent (port)
 - [ ] Phase 6 — Knowledge/RAG Agent
 - [ ] Phase 7 — Orchestration
