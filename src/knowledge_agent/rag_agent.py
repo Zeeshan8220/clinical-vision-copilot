@@ -7,7 +7,8 @@ import chromadb
 from groq import Groq
 
 client_groq = Groq(api_key=os.environ.get("GROQ_API_KEY", "").strip())
-client_chroma = chromadb.PersistentClient(path="chroma_db")
+CHROMA_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "chroma_db")
+client_chroma = chromadb.PersistentClient(path=CHROMA_PATH)
 collection = client_chroma.get_or_create_collection(name="medical_knowledge")
 
 
