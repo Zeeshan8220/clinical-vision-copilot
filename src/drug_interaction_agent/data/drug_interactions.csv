@@ -1,0 +1,20 @@
+drug_a,drug_b,severity,description
+warfarin,aspirin,Major,Significantly increased risk of bleeding when combined
+warfarin,ibuprofen,Major,NSAIDs increase bleeding risk and can reduce warfarin's anticoagulant clearance
+warfarin,amiodarone,Major,Amiodarone increases warfarin's anticoagulant effect, raising bleeding risk
+warfarin,ciprofloxacin,Moderate,Antibiotic may increase warfarin's blood-thinning effect
+simvastatin,clarithromycin,Major,Increased risk of myopathy and rhabdomyolysis
+digoxin,amiodarone,Major,Amiodarone increases digoxin levels, risking toxicity
+methotrexate,ibuprofen,Major,NSAIDs reduce methotrexate clearance, increasing toxicity risk
+clopidogrel,omeprazole,Moderate,Omeprazole may reduce clopidogrel's antiplatelet effectiveness
+sildenafil,nitroglycerin,Contraindicated,Combination can cause severe life-threatening hypotension
+fluoxetine,tramadol,Major,Increased risk of serotonin syndrome
+lithium,ibuprofen,Moderate,NSAIDs can increase lithium levels risking toxicity
+theophylline,ciprofloxacin,Moderate,Antibiotic increases theophylline levels risking toxicity
+lisinopril,potassium chloride,Moderate,Increased risk of dangerously high potassium levels (hyperkalemia)
+metformin,iodinated contrast,Moderate,Increased risk of lactic acidosis around imaging procedures
+phenelzine,fluoxetine,Contraindicated,Combining MAOI and SSRI can cause life-threatening serotonin syndrome
+aspirin,ibuprofen,Moderate,Ibuprofen may reduce aspirin's cardioprotective effect
+metformin,furosemide,Minor,Diuretic may affect kidney function relevant to metformin clearance
+simvastatin,amiodarone,Moderate,Increased risk of statin-related muscle toxicity
+warfarin,acetaminophen,Minor,Regular high-dose use may modestly increase INR
