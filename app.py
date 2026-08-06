@@ -81,26 +81,85 @@ if submitted:
         result = app_graph.invoke(case_input)
         report = result["final_report"]
 
-    st.success("Analysis complete")
+    st.success("✅ Analysis complete")
+    st.divider()
 
-    c1, c2, c3 = st.columns(3)
-    with c1:
-        st.subheader("🫁 Radiology")
-        st.json(report["radiology"])
-    with c2:
-        st.subheader("❤️ Risk Score")
-        st.json(report["risk_score"])
-    with c3:
-        st.subheader("💊 Drug Interactions")
-        st.json(report["drug_interactions"])
+    rad = report["radiology"]
+    st.subheader("🫁 Radiology")
+    if rad.get("skipped"):
+        st.info("No X-ray uploaded — radiology analysis skipped.")
+    else:
+        color = "🔴" if rad["prediction"] == "PNEUMONIA" else "🟢"
+        st.markdown(f"**{color} Prediction: {rad['prediction']}**  (confidence: {rad['confidence']:.0%})")
 
+    st.divider()
+
+    risk = report["risk_score"]
+    st.subheader("❤️ Cardiac Risk Score")
+    if risk.get("skipped"):
+        st.info("No clinical data provided — risk scoring skipped.")
+    else:
+        level_color = {"High": "🔴", "Medium": "🟡", "Low": "🟢"}.get(risk["risk_level"], "⚪")
+        col_a, col_b = st.columns(2)
+        col_a.metric("Risk Probability", f"{risk['risk_probability']:.1%}")
+        col_b.metric("Risk Level", f"{level_color} {risk['risk_level']}")
+
+    st.divider()
+
+    drugs = report["drug_interactions"]
+    st.subheader("💊 Drug Interactions")
+    if drugs.get("skipped"):
+        st.info("No medications provided — interaction check skipped.")
+    else:
+        interactions = drugs.get("interactions", [])
+        if not interactions:
+            st.success("No known interactions found among the listed medications.")
+        else:
+            severity_color = {"Contraindicated": "🔴", "Major": "🟠", "Moderate": "🟡", "Minor": "🟢", "Unknown": "⚪"}
+            for i in interactions:
+                badge = severity_color.get(i["severity"], "⚪")
+                source_tag = "✅ Verified" if i["source"] == "verified_database" else "🤖 AI-generated (unverified)"
+                st.markdown(f"{badge} **{i['drug_a'].title()} + {i['drug_b'].title()}** — *{i['severity']}* ({source_tag})")
+                st.caption(i["description"])
+
+    st.divider()
+
+    dx = report["differential_diagnosis"]
     st.subheader("🩺 Differential Diagnosis")
-    st.json(report["differential_diagnosis"])
+    if dx.get("skipped"):
+        st.info("No symptoms provided — differential diagnosis skipped.")
+    else:
+        likelihood_color = {"High": "🔴", "Medium": "🟡", "Low": "🟢"}
+        for item in dx.get("differential", []):
+            badge = likelihood_color.get(item["likelihood"], "⚪")
+            with st.expander(f"{badge} {item['diagnosis']} — {item['likelihood']} likelihood"):
+                st.write(item["reasoning"])
 
+    st.divider()
+
+    rx = report["prescription_draft"]
     st.subheader("📝 Prescription Draft")
-    st.json(report["prescription_draft"])
+    if rx.get("skipped"):
+        st.info("No diagnosis available — prescription draft skipped.")
+    else:
+        for med in rx.get("medications", []):
+            st.markdown(f"**{med['name']}** — {med['dosage']}, {med['frequency']}, for {med['duration']}")
+            st.caption(med.get("notes", ""))
+        st.markdown(f"**Follow-up:** {rx.get('follow_up', 'N/A')}")
+        st.markdown(f"**Referral:** {rx.get('referral', 'N/A')}")
+        st.markdown(f"**🚨 Red flags:** {rx.get('red_flags', 'N/A')}")
 
+    st.divider()
+
+    kb = report["knowledge_reference"]
     st.subheader("📚 Knowledge Reference")
-    st.json(report["knowledge_reference"])
+    if kb.get("skipped"):
+        st.info("No diagnosis to look up.")
+    else:
+        st.write(kb.get("answer", ""))
+        sources = list(set(kb.get("retrieved_sources", [])))
+        if sources:
+            st.caption("Sources: " + ", ".join(sources))
 
+    st.divider()
     st.warning(report["disclaimer"])
