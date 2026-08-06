@@ -29,10 +29,12 @@ def answer_question(question, n_results=3):
         f"[Source: {r['source']}]\n{r['text']}" for r in retrieved
     )
 
-    prompt = f"""Answer the user's question using ONLY the information in
-the CONTEXT below. If the context does not contain enough information
-to answer, say so explicitly rather than guessing from general
-knowledge. Always cite which source(s) you used.
+    prompt = f"""Answer the user's question using the information in the
+CONTEXT below. Use any relevant information you find, even if it only
+partially answers the question -- clearly note what aspects are NOT
+covered by the context rather than refusing to answer at all. Only say
+you cannot answer if the context is truly unrelated to the question.
+Always cite which source(s) you used.
 
 CONTEXT:
 {context}
