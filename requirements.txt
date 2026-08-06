@@ -1,22 +1,18 @@
-# Phase 1 — Radiology Agent
-torch>=2.2.0
-torchvision>=0.17.0
-timm>=0.9.12
-scikit-learn>=1.4.0
-pandas>=2.2.0
-numpy>=1.26.0
-pillow>=10.2.0
-grad-cam>=1.5.0
-fastapi>=0.110.0
-uvicorn>=0.27.0
-python-multipart>=0.0.9
-
-# Later phases (uncomment as you reach them)
-# xgboost>=2.0.3
-# shap>=0.44.0
-# langgraph>=0.0.30
-# langchain>=0.1.0
-# chromadb>=0.4.22
-# groq>=0.4.0
-
+torch
+torchvision
+scikit-learn
+pandas
+numpy
+pillow
+grad-cam
+fastapi
+uvicorn
+python-multipart
+xgboost
+shap
+joblib
+langgraph
+chromadb
+groq
+json-repair
 streamlit
