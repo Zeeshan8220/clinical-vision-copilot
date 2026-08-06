@@ -18,3 +18,5 @@ python-multipart>=0.0.9
 # langchain>=0.1.0
 # chromadb>=0.4.22
 # groq>=0.4.0
+
+streamlit
