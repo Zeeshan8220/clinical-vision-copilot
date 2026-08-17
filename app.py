@@ -8,6 +8,11 @@ import os
 import tempfile
 
 sys.path.append(os.path.join(os.path.dirname(os.path.abspath(__file__)), "src", "orchestrator"))
+
+# Bridge Streamlit secrets to environment variables (agents read via os.environ)
+if "GROQ_API_KEY" in st.secrets:
+    os.environ["GROQ_API_KEY"] = st.secrets["GROQ_API_KEY"]
+
 from graph import build_graph
 
 st.set_page_config(page_title="Clinical Vision Copilot", layout="wide")
