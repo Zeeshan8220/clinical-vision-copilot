@@ -11,7 +11,7 @@ sys.path.append(os.path.join(os.path.dirname(os.path.abspath(__file__)), "src", 
 
 # Bridge Streamlit secrets to environment variables (agents read via os.environ)
 if "GROQ_API_KEY" in st.secrets:
-    os.environ["GROQ_API_KEY"] = st.secrets["GROQ_API_KEY"]
+    os.environ["GROQ_API_KEY"] = st.secrets["GROQ_API_KEY"].strip()
 
 from graph import build_graph
 
@@ -133,6 +133,8 @@ if submitted:
     st.subheader("🩺 Differential Diagnosis")
     if dx.get("skipped"):
         st.info("No symptoms provided — differential diagnosis skipped.")
+    elif dx.get("error"):
+        st.error(f"Differential diagnosis failed: {dx['error']}")
     else:
         likelihood_color = {"High": "🔴", "Medium": "🟡", "Low": "🟢"}
         for item in dx.get("differential", []):
