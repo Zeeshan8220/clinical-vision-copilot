@@ -7,6 +7,14 @@ and public datasets only.
 **This is a decision-support / educational tool. It is not a diagnostic
 medical device and is not a substitute for a licensed doctor's judgement.**
 
+## 🔗 Live Demo
+
+**[https://clinical-vision-copilot.streamlit.app/](https://clinical-vision-copilot.streamlit.app/)**
+
+> Note: hosted on Streamlit Community Cloud's free tier, so the app may
+> take ~30-60 seconds to "wake up" if it has been inactive — this is
+> expected, just click "Yes, get this app back up!" and wait.
+
 ## Architecture
 
 Six agents, orchestrated with LangGraph:
@@ -17,9 +25,9 @@ Six agents, orchestrated with LangGraph:
 | 2 | Risk Score Agent | ✅ Complete — XGBoost model, SHAP, FastAPI (Phase 2) | `src/risk_agent/` |
 | 3 | Drug Interaction Agent | ✅ Complete — hybrid verified DB + LLM, FastAPI (Phase 3) | `src/drug_interaction_agent/` |
 | 4 | Differential Diagnosis Agent | ✅ Complete — LLM reasoning (Groq), FastAPI (Phase 4) | `src/differential_dx_agent/` |
-| 5 | Prescription Writer Agent | ⏳ Port from MedGenius (Phase 5) | `src/prescription_agent/` |
-| 6 | Knowledge/RAG Agent | ⏳ Not started (Phase 6) | `src/knowledge_agent/` |
-| — | Orchestrator | ⏳ Not started (Phase 7) | `src/orchestrator/` |
+| 5 | Prescription Writer Agent | ✅ Complete — LLM draft generation, FastAPI (Phase 5) | `src/prescription_agent/` |
+| 6 | Knowledge/RAG Agent | ✅ Complete — ChromaDB + grounded answers, FastAPI (Phase 6) | `src/knowledge_agent/` |
+| — | Orchestrator | ✅ Complete — LangGraph chains all agents (Phase 7) | `src/orchestrator/` |
 
 ## Phase 1 — Radiology Agent (Chest X-ray Pneumonia Detection)
 
@@ -117,10 +125,10 @@ pip install -r requirements.txt
 - [x] Phase 2 — Risk Score Agent (XGBoost + SHAP + FastAPI)
 - [x] Phase 3 — Drug Interaction Agent (hybrid verified DB + LLM + FastAPI)
 - [x] Phase 4 — Differential Diagnosis Agent (LLM reasoning + FastAPI)
-- [ ] Phase 5 — Prescription Writer Agent (port)
-- [ ] Phase 6 — Knowledge/RAG Agent
-- [ ] Phase 7 — Orchestration
-- [ ] Phase 8 — Dashboard + deploy
+- [x] Phase 5 — Prescription Writer Agent (LLM-based draft generation + FastAPI)
+- [x] Phase 6 — Knowledge/RAG Agent (ChromaDB + grounded LLM answers + FastAPI)
+- [x] Phase 7 — Orchestration (LangGraph chains all 6 agents into one report)
+- [x] Phase 8 — Dashboard + deploy (Streamlit, live on Streamlit Community Cloud)
 
 ## Roadmap
 
